@@ -53,7 +53,7 @@ namespace ToDoNotes.Controllers
             todoDomainModel = await todoRepository.CreateAsync(todoDomainModel);
 
             if(todoDomainModel == null)
-                return StatusCode(404, "Workspace dosen't exists.");
+                return NotFound("Workspace dosen't exists.");
 
             var todoDto = mapper.Map<ToDoDto>(todoDomainModel);
 

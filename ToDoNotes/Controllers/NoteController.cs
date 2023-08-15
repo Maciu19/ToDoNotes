@@ -53,7 +53,7 @@ namespace ToDoNotes.Controllers
             noteDomainModel = await noteRepository.CreateAsync(noteDomainModel);
 
             if (noteDomainModel == null)
-                return StatusCode(404, "Workspace dosen't exists.");
+                return NotFound("Workspace dosen't exists.");
 
             var noteDto = mapper.Map<NoteDto>(noteDomainModel);
 
