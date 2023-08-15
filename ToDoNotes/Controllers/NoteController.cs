@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoNotes.CustomActionFilters;
 using ToDoNotes.Models.Domain;
@@ -21,6 +22,7 @@ namespace ToDoNotes.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll()
         {
             var notesDomain = await noteRepository.GetAllAsync();
@@ -32,6 +34,7 @@ namespace ToDoNotes.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
+        [Authorize]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
             var noteDomain = await noteRepository.GetByIdAsync(id);
@@ -45,6 +48,7 @@ namespace ToDoNotes.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateModel]
         public async Task<IActionResult> Create([FromBody] AddNoteRequestDto addNoteRequestDto)
         {
@@ -62,6 +66,7 @@ namespace ToDoNotes.Controllers
 
         [HttpPatch]
         [Route("{id:Guid}")]
+        [Authorize]
         [ValidateModel]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateNoteRequestDto updateNoteRequestDto)
         {
@@ -83,6 +88,7 @@ namespace ToDoNotes.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize]
         public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var noteDomainModel = await noteRepository.DeleteAsync(id);

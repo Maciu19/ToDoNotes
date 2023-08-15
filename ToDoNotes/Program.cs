@@ -36,6 +36,7 @@ builder.Services.AddDbContext<ToDoNotesDbContext>(options =>
 builder.Services.AddScoped<IWorkspaceRepository, SQLWorkspaceRepository>();
 builder.Services.AddScoped<INoteRepository, SQLNoteRepository>();
 builder.Services.AddScoped<ITodoRepository, SQLTodoRepository>();
+builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
