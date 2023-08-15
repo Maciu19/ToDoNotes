@@ -16,16 +16,25 @@ namespace ToDoNotes.Repositories
 
         public async Task<List<Workspace>> GetAllAsync()
         {
-            return await dbContext.Workspace.ToListAsync();
+            return await dbContext.Workspace
+                .Include("User")
+                .ToListAsync();
         }
 
         public async Task<Workspace?> GetByIdAsync(Guid id)
         {
-            return await dbContext.Workspace.FirstOrDefaultAsync(x => x.Id == id);
+            return await dbContext.Workspace
+                .Include("User")
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<Workspace> CreateAsync(Workspace workspace)
+        public async Task<Workspace?> CreateAsync(Workspace workspace)
         {
+            var existingUser = await dbContext.User.FirstOrDefaultAsync(x => x.Id == workspace.UserId);
+
+            if (existingUser == null)
+                return null;
+
             await dbContext.Workspace.AddAsync(workspace);
             await dbContext.SaveChangesAsync();
             return workspace;

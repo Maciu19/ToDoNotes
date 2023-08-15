@@ -10,6 +10,7 @@ namespace ToDoNotes.Data
         {
         }
 
+        public DbSet<User> User { get; set; }
         public DbSet<Workspace> Workspace { get; set; }
         public DbSet<Note> Note { get; set; }
         public DbSet<ToDo> ToDo { get; set; }
@@ -25,6 +26,10 @@ namespace ToDoNotes.Data
                 .HasDefaultValueSql("getdate()");
 
             modelBuilder.Entity<ToDo>()
+                .Property(b => b.CreatedAt)
+                .HasDefaultValueSql("getdate()");
+
+            modelBuilder.Entity<User>()
                 .Property(b => b.CreatedAt)
                 .HasDefaultValueSql("getdate()");
         }

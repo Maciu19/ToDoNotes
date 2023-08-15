@@ -6,7 +6,7 @@ namespace ToDoNotes.Repositories
     {
         Task<List<Workspace>> GetAllAsync();
         Task<Workspace?> GetByIdAsync(Guid id);
-        Task<Workspace> CreateAsync(Workspace workspace);
+        Task<Workspace?> CreateAsync(Workspace workspace);
         Task<Workspace?> UpdateAsync(Guid id, Workspace workspace);
         Task<Workspace?> DeleteAsync(Guid id);
     }

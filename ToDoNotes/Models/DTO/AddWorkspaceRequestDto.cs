@@ -8,5 +8,8 @@ namespace ToDoNotes.Models.DTO
         [MinLength(1, ErrorMessage = "Name has to be a minimum of 1 character")]
         [MaxLength(500, ErrorMessage = "Name has to be a maximum of 500 characters")]
         public string Name { get; set; }
+
+        [Required]
+        public Guid UserId { get; set; }
     }
 }
