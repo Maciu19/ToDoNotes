@@ -19,6 +19,9 @@ namespace ToDoNotes.Mappings
             CreateMap<ToDo, ToDoDto>().ReverseMap();
             CreateMap<ToDo, AddTodoRequestDto>().ReverseMap();
             CreateMap<ToDo, UpdateTodoRequestDto>().ReverseMap();
+
+            CreateMap<User, UserRegister>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
         }
     }
 }

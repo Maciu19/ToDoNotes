@@ -32,6 +32,11 @@ namespace ToDoNotes.Data
             modelBuilder.Entity<User>()
                 .Property(b => b.CreatedAt)
                 .HasDefaultValueSql("getdate()");
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasIndex(e => e.Username).IsUnique();
+            });
         }
     }
 }

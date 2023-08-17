@@ -23,5 +23,20 @@ namespace ToDoNotes.Repositories
         {
             return await dbContext.User.FirstOrDefaultAsync(u => u.Id == id);
         }
+
+        public async Task<User> CreateAsync(User user)
+        {
+            var existingUser = await dbContext.User.FirstOrDefaultAsync(u => u.Username == user.Username);
+
+            if(existingUser != null)
+            {
+                throw new InvalidOperationException("A user with the same username already exists.");
+            }
+
+            await dbContext.User.AddAsync(user);
+            await dbContext.SaveChangesAsync();
+
+            return user;
+        }
     }
 }
