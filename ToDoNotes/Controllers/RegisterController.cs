@@ -31,9 +31,11 @@ namespace ToDoNotes.Controllers
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] UserRegister userRegister)
         {
+            byte[] salt = RandomNumberGenerator.GetBytes(keySize);
+
             var userDomainModel = mapper.Map<User>(userRegister);
 
-            userDomainModel.Password = HashPassword(userDomainModel.Password, userDomainModel.Username);
+            userDomainModel.Password = HashPassword(userDomainModel.Password, salt);
 
             try
             {
@@ -44,36 +46,15 @@ namespace ToDoNotes.Controllers
                 return Conflict(ex.Message);
             }
 
+            SaveUserSalt(userDomainModel.Username, salt);
+
             var userDto = mapper.Map<UserDto>(userDomainModel);
 
             return Ok(userDto);
         }
 
-        private string HashPassword(string password, string username)
+        private string HashPassword(string password, byte[] salt)
         {
-            byte[] salt = RandomNumberGenerator.GetBytes(keySize);
-
-            var fileName = "./salts.json";
-            var listOfUsersSalt = JsonConvert.DeserializeObject<List<UserSalt>>(System.IO.File.ReadAllText(fileName));
-
-            var userSalt = new UserSalt
-            {
-                Username = username,
-                Salt = Convert.ToHexString(salt)
-            };
-
-            if(listOfUsersSalt == null) 
-            {
-                var listOfUsersSaltEmpty = new List<UserSalt>() { userSalt };
-                var convertedListOfUsersSaltEmpty = JsonConvert.SerializeObject(listOfUsersSaltEmpty, Formatting.Indented);
-                System.IO.File.WriteAllText(fileName, convertedListOfUsersSaltEmpty);
-            } else
-            {
-                listOfUsersSalt.Add(userSalt);
-                var convertedListOfUsersSalt = JsonConvert.SerializeObject(listOfUsersSalt, Formatting.Indented);
-                System.IO.File.WriteAllText(fileName, convertedListOfUsersSalt);
-            }
-
             var hash = Rfc2898DeriveBytes.Pbkdf2(
                 Encoding.UTF8.GetBytes(password),
                 salt,
@@ -83,6 +64,31 @@ namespace ToDoNotes.Controllers
             );
 
             return Convert.ToHexString(hash);
+        }
+
+        private void SaveUserSalt(string username, byte[] salt)
+        {
+            var fileName = "./salts.json";
+            var listOfUsersSalt = JsonConvert.DeserializeObject<List<UserSalt>>(System.IO.File.ReadAllText(fileName));
+
+            var userSalt = new UserSalt
+            {
+                Username = username,
+                Salt = Convert.ToHexString(salt)
+            };
+
+            if (listOfUsersSalt == null)
+            {
+                var listOfUsersSaltEmpty = new List<UserSalt>() { userSalt };
+                var convertedListOfUsersSaltEmpty = JsonConvert.SerializeObject(listOfUsersSaltEmpty, Formatting.Indented);
+                System.IO.File.WriteAllText(fileName, convertedListOfUsersSaltEmpty);
+            }
+            else
+            {
+                listOfUsersSalt.Add(userSalt);
+                var convertedListOfUsersSalt = JsonConvert.SerializeObject(listOfUsersSalt, Formatting.Indented);
+                System.IO.File.WriteAllText(fileName, convertedListOfUsersSalt);
+            }
         }
     }
 }
