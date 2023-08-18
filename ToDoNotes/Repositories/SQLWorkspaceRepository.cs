@@ -33,7 +33,7 @@ namespace ToDoNotes.Repositories
             var existingUser = await dbContext.User.FirstOrDefaultAsync(x => x.Id == workspace.UserId);
 
             if (existingUser == null)
-                return null;
+                throw new InvalidOperationException("User dosen't exists.");
 
             await dbContext.Workspace.AddAsync(workspace);
             await dbContext.SaveChangesAsync();

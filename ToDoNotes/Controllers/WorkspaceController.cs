@@ -54,10 +54,14 @@ namespace ToDoNotes.Controllers
         {
             var workspaceDomainModel = mapper.Map<Workspace>(addWorkspaceRequestDto);
 
-            workspaceDomainModel = await workspaceRepository.CreateAsync(workspaceDomainModel);
-
-            if (workspaceDomainModel == null)
-                return NotFound("User dosen't exists.");
+            try
+            {
+                workspaceDomainModel = await workspaceRepository.CreateAsync(workspaceDomainModel);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return NotFound(ex.Message);
+            }
 
             var workspaceDto = mapper.Map<WorkspaceDto>(workspaceDomainModel);
 

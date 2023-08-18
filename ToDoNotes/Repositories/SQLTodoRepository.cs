@@ -31,7 +31,7 @@ namespace ToDoNotes.Repositories
         {
             var existingWorkspace = await dbContext.Workspace.FirstOrDefaultAsync(x => x.Id == todo.WorkspaceId);
             if (existingWorkspace == null)
-                return null;
+                throw new InvalidOperationException("Workspace dosen't exists.");
 
             await dbContext.ToDo.AddAsync(todo);
             await dbContext.SaveChangesAsync();

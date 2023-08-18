@@ -54,10 +54,15 @@ namespace ToDoNotes.Controllers
         {
             var todoDomainModel = mapper.Map<ToDo>(addTodoRequestDto);
 
-            todoDomainModel = await todoRepository.CreateAsync(todoDomainModel);
+            try
+            {
+                todoDomainModel = await todoRepository.CreateAsync(todoDomainModel);
+            }
+            catch (InvalidOperationException ex)
+            {
 
-            if(todoDomainModel == null)
-                return NotFound("Workspace dosen't exists.");
+                return NotFound(ex.Message);
+            }
 
             var todoDto = mapper.Map<ToDoDto>(todoDomainModel);
 
