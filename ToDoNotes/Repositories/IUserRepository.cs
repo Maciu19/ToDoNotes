@@ -7,6 +7,7 @@ namespace ToDoNotes.Repositories
     {
         Task<User?> GetByUsernamePassword(UserLogin userLogin);
         Task<User?> GetById(Guid id);
+        Task<User?> GetByUsernameAsync(string username);
         Task<User> CreateAsync(User user);
     }
 }

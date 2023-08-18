@@ -74,7 +74,7 @@ namespace ToDoNotes.Controllers
             var userSalt = new UserSalt
             {
                 Username = username,
-                Salt = Convert.ToHexString(salt)
+                Salt = Convert.ToBase64String(salt)
             };
 
             if (listOfUsersSalt == null)

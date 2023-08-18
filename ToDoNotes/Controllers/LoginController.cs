@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using ToDoNotes.Models.Domain;
 using ToDoNotes.Models.DTO;
@@ -17,6 +19,10 @@ namespace ToDoNotes.Controllers
         private readonly IUserRepository userRepository;
         private readonly IConfiguration config;
 
+        private const int keySize = 64;
+        private const int iterations = 350000;
+        private HashAlgorithmName hashAlgorithm = HashAlgorithmName.SHA512;
+
         public LoginController(IUserRepository userRepository, IConfiguration config)
         {
             this.userRepository = userRepository;
@@ -29,24 +35,29 @@ namespace ToDoNotes.Controllers
         {
             var user = Authenticate(userLogin);
 
-            if(user != null) 
+            if(user.Result != null) 
             {
-                var token = Generate(user);
+                var token = Generate(user.Result);
                 return Ok(token);
             }
 
             return NotFound("User not found");
-
         }
 
-        private User Authenticate(UserLogin userLogin)
+        private async Task<User?> Authenticate(UserLogin userLogin)
         {
-            var currentUser = userRepository.GetByUsernamePassword(userLogin);
+            var currentUser = await userRepository.GetByUsernameAsync(userLogin.Username);
 
             if (currentUser == null)
                 return null;
 
-            return currentUser.Result;
+            var salt = GetUserSalt(userLogin.Username);
+
+            var checkPass = verifyPassword(userLogin.Password, currentUser.Password, salt);
+
+            if (checkPass)
+                return currentUser;
+            return null;
         }
 
         private string Generate(User user)
@@ -71,5 +82,27 @@ namespace ToDoNotes.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        private bool verifyPassword(string password, string hash, byte[] salt)
+        {
+            var hashToCompare = Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, hashAlgorithm, keySize);
+            return CryptographicOperations.FixedTimeEquals(hashToCompare, Convert.FromHexString(hash));
+        }
+
+        private byte[]? GetUserSalt(string username)
+        {
+            var fileName = "./salts.json";
+            var listOfUsersSalt = JsonConvert.DeserializeObject<List<UserSalt>>(System.IO.File.ReadAllText(fileName));
+
+            foreach (var userSalt in listOfUsersSalt)
+            {
+                if (userSalt.Username.Equals(username))
+                {
+                    byte[] saltBytes = Convert.FromBase64String(userSalt.Salt);
+                    return saltBytes;
+                }
+            }
+
+            return null;
+        }
     }
 }

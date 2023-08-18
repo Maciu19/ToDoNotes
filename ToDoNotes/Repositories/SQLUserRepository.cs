@@ -24,6 +24,11 @@ namespace ToDoNotes.Repositories
             return await dbContext.User.FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        public async Task<User?> GetByUsernameAsync(string username)
+        {
+            return await dbContext.User.FirstOrDefaultAsync(u => u.Username == username);
+        }
+
         public async Task<User> CreateAsync(User user)
         {
             var existingUser = await dbContext.User.FirstOrDefaultAsync(u => u.Username == user.Username);
