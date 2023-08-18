@@ -14,12 +14,7 @@ namespace ToDoNotes.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task<User?> GetByUsernamePassword(UserLogin userLogin)
-        {
-            return await dbContext.User.FirstOrDefaultAsync(u => u.Username == userLogin.Username && u.Password == userLogin.Password);
-        }
-
-        public async Task<User?> GetById(Guid id)
+        public async Task<User?> GetByIdAsync(Guid id)
         {
             return await dbContext.User.FirstOrDefaultAsync(u => u.Id == id);
         }

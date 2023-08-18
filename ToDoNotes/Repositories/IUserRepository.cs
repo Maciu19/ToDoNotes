@@ -5,8 +5,7 @@ namespace ToDoNotes.Repositories
 {
     public interface IUserRepository
     {
-        Task<User?> GetByUsernamePassword(UserLogin userLogin);
-        Task<User?> GetById(Guid id);
+        Task<User?> GetByIdAsync(Guid id);
         Task<User?> GetByUsernameAsync(string username);
         Task<User> CreateAsync(User user);
     }
